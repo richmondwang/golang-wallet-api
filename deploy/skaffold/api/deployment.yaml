@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      serviceAccountName: richmond-golang-ledger
+      initContainers:
+      - name: wait-for-db-migrate
+        image: bitnami/kubectl:latest
+        args:
+          - wait
+          - --for=condition=complete
+          - job/db-migrate
+          - --timeout=60s
+      containers:
+      - name: api
+        image: github.com/richmondwang/golang-wallet-api
+        envFrom:
+        - configMapRef:
+            name: api-config
+        - secretRef:
+            name: api-secrets
+        ports:
+        - name: http
+          containerPort: 8080
+          protocol: TCP
+        # livenessProbe:
+        #   httpGet:
+        #     path: /healthz/live
+        #     port: http2-api
+        #   initialDelaySeconds: 3
+        # readinessProbe:
+        #   httpGet:
+        #     path: /healthz/ready
+        #     port: http2-api
+        #   initialDelaySeconds: 3
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 100m
+            memory: 100Mi
+        securityContext:
+          runAsGroup: 1000

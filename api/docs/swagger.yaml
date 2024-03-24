@@ -1,0 +1,272 @@
+definitions:
+  ent.Account:
+    properties:
+      balance:
+        description: Balance holds the value of the "balance" field.
+        type: number
+      created_at:
+        description: CreatedAt holds the value of the "created_at" field.
+        type: string
+      edges:
+        allOf:
+        - $ref: '#/definitions/ent.AccountEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the AccountQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: integer
+      name:
+        description: Name holds the value of the "name" field.
+        type: string
+    required:
+    - balance
+    - created_at
+    - edges
+    - id
+    - name
+    type: object
+  ent.AccountEdges:
+    properties:
+      incoming_transactions:
+        description: IncomingTransactions holds the value of the incoming_transactions
+          edge.
+        items:
+          $ref: '#/definitions/ent.Transaction'
+        type: array
+      outgoing_transactions:
+        description: OutgoingTransactions holds the value of the outgoing_transactions
+          edge.
+        items:
+          $ref: '#/definitions/ent.Transaction'
+        type: array
+    required:
+    - incoming_transactions
+    - outgoing_transactions
+    type: object
+  ent.Transaction:
+    properties:
+      amount:
+        description: Amount holds the value of the "amount" field.
+        type: number
+      created_at:
+        description: CreatedAt holds the value of the "created_at" field.
+        type: string
+      edges:
+        allOf:
+        - $ref: '#/definitions/ent.TransactionEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the TransactionQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: integer
+    required:
+    - amount
+    - created_at
+    - edges
+    - id
+    type: object
+  ent.TransactionEdges:
+    properties:
+      from_account:
+        allOf:
+        - $ref: '#/definitions/ent.Account'
+        description: FromAccount holds the value of the from_account edge.
+      to_account:
+        allOf:
+        - $ref: '#/definitions/ent.Account'
+        description: ToAccount holds the value of the to_account edge.
+    required:
+    - from_account
+    - to_account
+    type: object
+  handlers.AccountRequest:
+    properties:
+      initial_balance:
+        type: number
+      name:
+        type: string
+    required:
+    - initial_balance
+    - name
+    type: object
+  handlers.ResponseWrapper:
+    properties:
+      code:
+        type: integer
+      data: {}
+      error:
+        type: string
+    required:
+    - code
+    - data
+    - error
+    type: object
+  handlers.TransferRequest:
+    properties:
+      account_id:
+        type: integer
+      amount:
+        type: number
+    required:
+    - account_id
+    - amount
+    type: object
+info:
+  contact: {}
+paths:
+  /accounts:
+    post:
+      description: Create an account
+      parameters:
+      - description: Data of the account
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.AccountRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.ResponseWrapper'
+            - properties:
+                data:
+                  $ref: '#/definitions/ent.Account'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ResponseWrapper'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ResponseWrapper'
+      summary: Create an account
+      tags:
+      - account
+  /accounts/{accountID}:
+    get:
+      description: Retrieve an account using an account ID
+      parameters:
+      - description: Account ID
+        in: path
+        name: accountID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.ResponseWrapper'
+            - properties:
+                data:
+                  $ref: '#/definitions/ent.Account'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ResponseWrapper'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ResponseWrapper'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ResponseWrapper'
+      summary: Retrieve an account using an account ID
+      tags:
+      - account
+  /accounts/{accountID}/transactions:
+    get:
+      description: Retrieve transactions of an account
+      parameters:
+      - description: Account ID
+        in: path
+        name: accountID
+        required: true
+        type: integer
+      - description: Type of transactions
+        enum:
+        - all
+        - incoming
+        - outgoing
+        in: query
+        name: type
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.ResponseWrapper'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/ent.Transaction'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ResponseWrapper'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ResponseWrapper'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ResponseWrapper'
+      summary: Retrieve transactions of an account
+      tags:
+      - account
+  /accounts/{accountID}/transfer:
+    post:
+      description: Transfer an amount from an account's wallet to another
+      parameters:
+      - description: Account ID
+        in: path
+        name: accountID
+        required: true
+        type: integer
+      - description: Account and amount to transfer
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.TransferRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.ResponseWrapper'
+            - properties:
+                data:
+                  $ref: '#/definitions/ent.Transaction'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ResponseWrapper'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ResponseWrapper'
+      summary: Transfer money
+      tags:
+      - account
+swagger: "2.0"

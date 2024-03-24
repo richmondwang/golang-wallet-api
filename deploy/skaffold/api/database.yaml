@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: database
+spec:
+  selector:
+    matchLabels:
+      app: database
+  template:
+    metadata:
+      labels:
+        app: database
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:alpine
+        envFrom:
+        - secretRef:
+            name: database-env
+        ports:
+        - name: postgres
+          containerPort: 5432
+          protocol: TCP

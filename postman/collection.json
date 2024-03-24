@@ -1,0 +1,284 @@
+{
+	"info": {
+		"_postman_id": "8c9c2238-5756-4700-a5de-b765e8ef4ed5",
+		"name": "richmond-ledger-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "18297386"
+	},
+	"item": [
+		{
+			"name": "CreateFromAccount",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"postman.setEnvironmentVariable(\"fromAccountID\", jsonData.data.id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Richmond Wang\",\n    \"initial_balance\": 100\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{endpoint}}/accounts",
+					"host": [
+						"{{endpoint}}"
+					],
+					"path": [
+						"accounts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetFromAccount",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{endpoint}}/accounts/{{fromAccountID}}",
+					"host": [
+						"{{endpoint}}"
+					],
+					"path": [
+						"accounts",
+						"{{fromAccountID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CreateToAccount",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"postman.setEnvironmentVariable(\"toAccountID\", jsonData.data.id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Skyler Chase\",\n    \"initial_balance\": 300\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{endpoint}}/accounts",
+					"host": [
+						"{{endpoint}}"
+					],
+					"path": [
+						"accounts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetToAccount",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{endpoint}}/accounts/{{toAccountID}}",
+					"host": [
+						"{{endpoint}}"
+					],
+					"path": [
+						"accounts",
+						"{{toAccountID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "TransferMoney",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"account_id\": {{toAccountID}},\n    \"amount\": 35\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{endpoint}}/accounts/{{fromAccountID}}/transfer",
+					"host": [
+						"{{endpoint}}"
+					],
+					"path": [
+						"accounts",
+						"{{fromAccountID}}",
+						"transfer"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "TransferMoneyReverse",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"account_id\": {{fromAccountID}},\n    \"amount\": 35\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{endpoint}}/accounts/{{toAccountID}}/transfer",
+					"host": [
+						"{{endpoint}}"
+					],
+					"path": [
+						"accounts",
+						"{{toAccountID}}",
+						"transfer"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetOutgoingTrasactions",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{endpoint}}/accounts/{{fromAccountID}}/transactions?type=outgoing",
+					"host": [
+						"{{endpoint}}"
+					],
+					"path": [
+						"accounts",
+						"{{fromAccountID}}",
+						"transactions"
+					],
+					"query": [
+						{
+							"key": "type",
+							"value": "outgoing"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetIncomingTrasactions",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{endpoint}}/accounts/{{fromAccountID}}/transactions?type=incoming",
+					"host": [
+						"{{endpoint}}"
+					],
+					"path": [
+						"accounts",
+						"{{fromAccountID}}",
+						"transactions"
+					],
+					"query": [
+						{
+							"key": "type",
+							"value": "incoming"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetAllTrasactions",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{endpoint}}/accounts/{{fromAccountID}}/transactions",
+					"host": [
+						"{{endpoint}}"
+					],
+					"path": [
+						"accounts",
+						"{{fromAccountID}}",
+						"transactions"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "endpoint",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "fromAccountID",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "toAccountID",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

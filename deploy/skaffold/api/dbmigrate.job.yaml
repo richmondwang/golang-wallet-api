@@ -1,0 +1,18 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-migrate
+spec:
+  template:
+    spec:
+      serviceAccountName: richmond-golang-ledger
+      containers:
+      - name: db-migrate
+        image: github.com/richmondwang/golang-wallet-api-dbmigrate
+        envFrom:
+        - configMapRef:
+            name: api-config
+        - secretRef:
+            name: api-secrets
+      restartPolicy: OnFailure
+  backoffLimit: 4

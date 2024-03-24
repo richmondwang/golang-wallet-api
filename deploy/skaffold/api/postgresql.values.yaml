@@ -1,0 +1,12 @@
+global:
+  postgresql:
+    auth:
+      postgresPassword: "postgres"
+      username: "ledger"
+      password: "ledger"
+      database: "ledger"
+      existingSecret: ""
+      secretKeys:
+        adminPasswordKey: ""
+        userPasswordKey: ""
+        replicationPasswordKey: ""

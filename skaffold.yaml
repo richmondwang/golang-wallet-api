@@ -1,0 +1,33 @@
+apiVersion: skaffold/v4beta6
+kind: Config
+metadata:
+  name: golang-ledger
+build:
+  local:
+    push: false
+  artifacts:
+    - image: github.com/richmondwang/golang-wallet-api
+      context: api
+      docker:
+        dockerfile: Dockerfile
+        target: dev
+      sync:
+        manual:
+        - src: "api/**/*"
+          dest: "/home/godev/build/"
+    - image: github.com/richmondwang/golang-wallet-api-dbmigrate
+      context: api
+      docker:
+        dockerfile: Dockerfile
+        target: dbmigrate
+manifests:
+  kustomize:
+    paths:
+      - deploy/skaffold/api
+
+portForward:
+  - resourceType: service
+    resourceName: api
+    namespace: richmond-golang-ledger
+    port: 80
+    localPort: 3000
